@@ -11,8 +11,8 @@ class UserInput:
         return self._outputdevice
 
     def _parse_args(self, args):
-        if len(args) != 1 or args[0][:7] != 'output=':
-            print("Error: Invalid output specified")
+        if len(args) != 2 or args[1][:7] != 'output=':
+            print("Error: Invalid output specified:")
             self._print_usage()
         else:
             # TODO check if device is valid and/or exists
