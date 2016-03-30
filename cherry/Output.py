@@ -12,14 +12,6 @@ class Output:
     # Construct the data array from the patterns for each layer (repeated)
     # Layers are lists, multiples of 3, that contain channel rgb info
     def build_data(self, layer0, layer1, layer2, layer3, layer4):
-        if len(layer0) % 3 != 0 or \
-           len(layer1) % 3 != 0 or \
-           len(layer2) % 3 != 0 or \
-           len(layer3) % 3 != 0 or \
-           len(layer4) % 3 != 0:
-            print('Layers must contain rgb values')
-            return None
-
         data = self._build_layer(layer0, False) + \
             self._build_layer(layer1, False) + \
             self._build_layer(layer2, False) + \
@@ -32,10 +24,13 @@ class Output:
     # layer is a list of rgb values; must be multiple of 3
     def _build_layer(self, layer, small):
         data = []
+        if len(layer) % 3 != 0:
+            print('Layer has to have length that is multiple of 3 (rgb)')
+            return None
         if small:
-            for i in range(0, 5, len(layer) / 3):
+            for i in range(0, 5, len(layer) // 3):
                 data += layer + [0, 0, 0]
         else:
-            for i in range(0, 10, len(layer) / 3):
+            for i in range(0, 10, len(layer) // 3):
                 data += layer
         return data[:30]
