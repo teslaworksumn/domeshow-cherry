@@ -37,11 +37,11 @@ class Patterns:
                     self._beach_ball_of_death, self._counter_rotating_circles, self._solid_fade,
                     self._full_random_fade, self._spiral, self._sets_of_5]
         index = random.randint(0, len(patterns)-1)
+        index = 1
         self._tickstream = Observable.interval(self._tickrate)\
             .take_until(self._stopstream)\
-            .map(patterns[index])\
-            .map(self._output.send)\
-            .subscribe(lambda x: self._next())\
+            .map(lambda a,b: patterns[index](a))\
+            .subscribe(self._output.send)
 
     # Each triangle is a random color
     # Changes each tick for 4 ticks
@@ -52,10 +52,21 @@ class Patterns:
                 data += [random.randint(0, 255)]
             return data
         else:
+            self._next()
             return None
 
     def _target(self, frame):
-        pass
+        color1 = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+        color2 = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+        color1 = [1, 1, 1]
+        color2 = [2, 2, 2]
+        data = self._output.build_data(color1, color1, color2, color2, color1)
+        print(data)
+        return data
+#
+# [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+#  1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 2, 0, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0]
+#
 
     def _reverse_target(self, frame):
         pass

@@ -1,8 +1,10 @@
 #!python3 -i
 
-import UserInput as UserInput
-import Patterns as Patterns
 import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
+import cherry.UserInput as UserInput
+import cherry.Patterns as Patterns
 import atexit
 
 
@@ -13,7 +15,7 @@ def help():
 off(): turns the dome off (solid black)
 solid(color): turns the dome a solid color (number 0 <= n <= 255)
 patloop(): loop through random patterns
-
+exit(): quits the program
 """
     print(funcs)
 
