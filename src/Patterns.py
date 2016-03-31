@@ -30,6 +30,7 @@ class Patterns:
         self._stopstream.on_next(None)
 
     # Make the dome a solid color
+    # Because the boards persistently hold their color, only send one set of data out
     def solid(self, r, g, b):
         self._stopstream.on_next(None)
         data = [r, g, b] * self._numchannels

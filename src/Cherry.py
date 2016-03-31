@@ -15,7 +15,7 @@ def help():
 off(): turns the dome off (solid black)
 solid(color): turns the dome a solid color (number 0 <= n <= 255)
 patloop(): loop through random patterns
-exit(): quits the program
+exit(): quits the program (call shutdown() first)
 """
     print(funcs)
 
