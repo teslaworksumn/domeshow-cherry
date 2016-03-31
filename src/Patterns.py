@@ -2,7 +2,7 @@ import random
 import rx.subjects.subject as rxsubject
 from rx import Observable
 from rx.concurrency import scheduler
-import Output as Output
+import src.Output as Output
 
 
 # This class holds all of the dome's patterns and runs them

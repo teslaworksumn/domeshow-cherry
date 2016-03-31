@@ -9,5 +9,5 @@ setup(name='cherry',
       version='0.1',
       description='The Doooooooooooooooooooooooooooooooooome Controller',
       author='Tesla Works',
-      packages=['cherry'],
+      packages=['src'],
      )
