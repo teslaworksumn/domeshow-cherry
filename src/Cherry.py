@@ -46,7 +46,7 @@ def patloop():
 
 
 args = UserInput.UserInput()
-patterns = Patterns.Patterns(device=args.get_output, numchannels=120, tickrate=1000)
+patterns = Patterns.Patterns(device=args.get_output(), numch=120, tickrate=1000)
 
 # Doesn't work...
 def shutdown():
