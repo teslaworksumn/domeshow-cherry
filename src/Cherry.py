@@ -3,15 +3,15 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-import cherry.UserInput as UserInput
-import cherry.Patterns as Patterns
+import src.Patterns as Patterns
+import src.UserInput as UserInput
 import atexit
+
 
 
 def help():
     funcs = \
-"""Functions:
-
+"""
 off(): turns the dome off (solid black)
 solid(color): turns the dome a solid color (number 0 <= n <= 255)
 patloop(): loop through random patterns
@@ -45,8 +45,8 @@ def patloop():
     patterns.start()
 
 
-userinput = UserInput.UserInput()
-patterns = Patterns.Patterns(device='/dev/null', numchannels=120, tickrate=1000)
+args = UserInput.UserInput()
+patterns = Patterns.Patterns(device=args.get_output, numchannels=120, tickrate=1000)
 
 # Doesn't work...
 def shutdown():
