@@ -3,8 +3,8 @@
 import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-import src.Patterns as Patterns
-import src.UserInput as UserInput
+from src.Patterns import Patterns
+from src.UserInput import UserInput
 import atexit
 
 
@@ -13,11 +13,15 @@ def help():
     funcs = \
 """
 off(): turns the dome off (solid black)
-solid(color): turns the dome a solid color (number 0 <= n <= 255)
+solid(r, g, b): turns the dome a solid color (number 0 <= n <= 255)
 patloop(): loop through random patterns
 exit(): quits the program (call shutdown() first)
 """
     print(funcs)
+
+
+args = UserInput()
+patterns = Patterns(device=args.get_output(), numch=120, tickrate=1000)
 
 def off():
     patterns.solid(0, 0, 0)
@@ -43,10 +47,6 @@ def _get_ranged_int(x, low, high):
 
 def patloop():
     patterns.start()
-
-
-args = UserInput.UserInput()
-patterns = Patterns.Patterns(device=args.get_output(), numch=120, tickrate=1000)
 
 # Doesn't work...
 def shutdown():
