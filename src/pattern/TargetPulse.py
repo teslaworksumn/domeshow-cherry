@@ -1,5 +1,5 @@
 import random
-from src.patterns.Pattern import Pattern
+from src.pattern.Pattern import Pattern
 
 
 # Pulse layer by layer, up or down
@@ -21,6 +21,7 @@ class TargetPulse(Pattern):
             self._patbuilder.build_data(self.color1, self.color1, self.color2, self.color2, self.color2),
             self._patbuilder.build_data(self.color1, self.color1, self.color1, self.color2, self.color2),
             self._patbuilder.build_data(self.color1, self.color1, self.color1, self.color1, self.color2)
+            self._patbuilder.build_data(self.color1, self.color1, self.color1, self.color1, self.color1)
         ]
 
     def getframe(self, frame):

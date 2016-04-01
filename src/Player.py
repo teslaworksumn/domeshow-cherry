@@ -3,12 +3,12 @@ import rx.subjects.subject as rxsubject
 from rx import Observable
 from src.Output import FileOutput
 
-from src.patterns.TargetPulse import TargetPulse
-from src.patterns.FullRandom import FullRandom
+from src.pattern.TargetPulse import TargetPulse
+from src.pattern.FullRandom import FullRandom
 
 
 # This class holds all of the dome's patterns and runs them
-class Patterns:
+class Player:
 
     def __init__(self, device, numch, tick_period_ms, frames_per_pattern=32):
         self._num_channels = numch
@@ -37,8 +37,7 @@ class Patterns:
     # Make the dome a solid color
     # Because the boards persistently hold their color, only send one set of data out
     def solid(self, r, g, b):
-        self._islooping = False
-        self._stopstream.on_next(None)
+        self.shutdown()
         data = [r, g, b] * self._num_channels
         self._output.send(data)
 
@@ -46,9 +45,11 @@ class Patterns:
     def _next(self):
         if self._islooping:
             self._stopstream.on_next(None)
-            index = random.randint(0, len(self.patterns)-1)
-            # TODO remove (testing)
+
+            # TODO switch back (testing)
+            # index = random.randint(0, len(self.patterns)-1)
             index = 0
+
             Observable.interval(self._tick_period_ms)\
                 .take_until(self._stopstream)\
                 .take(self._frames_per_pattern)\
