@@ -6,23 +6,41 @@ from src.Output import FileOutput
 from src.pattern.TargetPulse import TargetPulse
 from src.pattern.FullRandom import FullRandom
 
+## General idea
+# 
+# make pattern stream:
+# 1. Observable.repeat(None)
+# 2. map(getRandomIndex)
+# 3. map(lambda i: patterns[i])
+# 4. concat_all()
+#
+# state stream: will be a stream of PlayerState
+# enum PlayerState {
+#   Patterns,
+#   Solid(i8 r, i8 g, i8 b),
+# }
+#
+# data stream:
+# 1. state_stream
+# 2. map(state -> match (state) {
+#        Solid(r, g, b) = Observable.never().start_with([r, g, b] * 40),
+#        Pattern = make_pattern_stream(),
+#    })
+# 3. switch()
+
 
 # This class holds all of the dome's patterns and runs them
 class Player:
 
-    def __init__(self, device, numch, tick_period_ms, frames_per_pattern=32):
-        self._num_channels = numch
-        self._frames_per_pattern = frames_per_pattern
-        self._tick_period_ms = tick_period_ms
+    def __init__(self, device, num_channels):
+        self._num_channels = num_channels
         self._output = FileOutput(device)
-        self._islooping = False
-        self._stopstream = rxsubject.Subject()
-        self.patterns = [FullRandom(numch),
-                         TargetPulse(True),
-                         TargetPulse(False),
-                         self._rotatable_horizontal_wave, self._rotatable_horizontal_wave_continuous,
-                         self._beach_ball_of_death, self._counter_rotating_circles, self._solid_fade,
-                         self._full_random_fade, self._spiral, self._sets_of_5]
+        self._state_stream = rxsubject.Subject()
+        self.patterns = []
+
+        self._data_stream
+
+    def run_patterns
 
     # Starts running patterns
     def start(self):
