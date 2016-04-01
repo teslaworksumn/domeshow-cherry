@@ -1,7 +1,7 @@
 import random
 import rx.subjects.subject as rxsubject
 from rx import Observable
-import src.Output as Output
+from src.Output import FileOutput
 
 from src.patterns.TargetPulse import TargetPulse
 from src.patterns.FullRandom import FullRandom
@@ -10,12 +10,11 @@ from src.patterns.FullRandom import FullRandom
 # This class holds all of the dome's patterns and runs them
 class Patterns:
 
-    # tickrate is in ms
-    def __init__(self, device, numch, tickrate, framesperpattern=32):
-        self._numchannels = numch
-        self._framesperpattern = framesperpattern
-        self._tickrate = tickrate
-        self._output = Output(device)
+    def __init__(self, device, numch, tick_period_ms, frames_per_pattern=32):
+        self._num_channels = numch
+        self._frames_per_pattern = frames_per_pattern
+        self._tick_period_ms = tick_period_ms
+        self._output = FileOutput(device)
         self._islooping = False
         self._stopstream = rxsubject.Subject()
         self.patterns = [FullRandom(numch),
@@ -40,7 +39,7 @@ class Patterns:
     def solid(self, r, g, b):
         self._islooping = False
         self._stopstream.on_next(None)
-        data = [r, g, b] * self._numchannels
+        data = [r, g, b] * self._num_channels
         self._output.send(data)
 
     # Get the next pattern to play, and start it
@@ -50,9 +49,9 @@ class Patterns:
             index = random.randint(0, len(self.patterns)-1)
             # TODO remove (testing)
             index = 0
-            Observable.interval(self._tickrate)\
+            Observable.interval(self._tick_period_ms)\
                 .take_until(self._stopstream)\
-                .take(self._framesperpattern)\
+                .take(self._frames_per_pattern)\
                 .map(lambda a,b: self.patterns[index].getframe(a))\
                 .subscribe(self._output.send, lambda e: print(e), lambda: self._next())
 

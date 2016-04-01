@@ -1,6 +1,6 @@
 
 
-class Output:
+class FileOutput:
     def __init__(self, device):
         self._device = device
 

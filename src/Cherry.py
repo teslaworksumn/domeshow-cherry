@@ -21,7 +21,7 @@ exit(): quits the program (call shutdown() first)
 
 
 args = UserInput()
-patterns = Patterns(device=args.get_output(), numch=120, tickrate=1000)
+patterns = Patterns(device=args.get_output(), numch=120, tick_period_ms=1000)
 
 def off():
     patterns.solid(0, 0, 0)
