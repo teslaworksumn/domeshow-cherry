@@ -8,6 +8,9 @@ class FullRandom(Pattern):
         super().__init__()
         self._numchannels = numch
 
+    def initialize(self):
+        pass
+
     def getframe(self, frame):
         data = []
         for ch in range(self._numchannels):

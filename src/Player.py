@@ -40,8 +40,6 @@ class Player:
 
         self._data_stream
 
-    def run_patterns
-
     # Starts running patterns
     def start(self):
         self._islooping = True
@@ -81,9 +79,6 @@ class Player:
         pass
 
     def _beach_ball_of_death(self, frame):
-        pass
-
-    def _counter_rotating_circles(self, frame):
         pass
 
     def _solid_fade(self, frame):

@@ -7,22 +7,27 @@ class TargetPulse(Pattern):
     def __init__(self, reversed):
         super().__init__()
         self.reversed = reversed
-        self.color1 = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-        self.color2 = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+        self.states = []
+        self.initialize()
+
+    def initialize(self):
+        color1 = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+        color2 = [random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
 
         self.states = [
-            self._patbuilder.build_data(self.color1, self.color1, self.color1, self.color1, self.color1),
-            self._patbuilder.build_data(self.color2, self.color1, self.color1, self.color1, self.color1),
-            self._patbuilder.build_data(self.color2, self.color2, self.color1, self.color1, self.color1),
-            self._patbuilder.build_data(self.color2, self.color2, self.color2, self.color1, self.color1),
-            self._patbuilder.build_data(self.color2, self.color2, self.color2, self.color2, self.color1),
-            self._patbuilder.build_data(self.color2, self.color2, self.color2, self.color2, self.color2),
-            self._patbuilder.build_data(self.color1, self.color2, self.color2, self.color2, self.color2),
-            self._patbuilder.build_data(self.color1, self.color1, self.color2, self.color2, self.color2),
-            self._patbuilder.build_data(self.color1, self.color1, self.color1, self.color2, self.color2),
-            self._patbuilder.build_data(self.color1, self.color1, self.color1, self.color1, self.color2)
-            self._patbuilder.build_data(self.color1, self.color1, self.color1, self.color1, self.color1)
+            self._patbuilder.build_data(color1, color1, color1, color1, color1),
+            self._patbuilder.build_data(color2, color1, color1, color1, color1),
+            self._patbuilder.build_data(color2, color2, color1, color1, color1),
+            self._patbuilder.build_data(color2, color2, color2, color1, color1),
+            self._patbuilder.build_data(color2, color2, color2, color2, color1),
+            self._patbuilder.build_data(color2, color2, color2, color2, color2),
+            self._patbuilder.build_data(color1, color2, color2, color2, color2),
+            self._patbuilder.build_data(color1, color1, color2, color2, color2),
+            self._patbuilder.build_data(color1, color1, color1, color2, color2),
+            self._patbuilder.build_data(color1, color1, color1, color1, color2),
+            self._patbuilder.build_data(color1, color1, color1, color1, color1)
         ]
+
 
     def getframe(self, frame):
         numstates = len(self.states)
