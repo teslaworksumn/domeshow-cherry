@@ -1,4 +1,5 @@
 import argparse
+import os
 
 
 class UserInput:
@@ -12,7 +13,10 @@ class UserInput:
     # Return True if dev exists
     # TODO implement
     def _valid_device(self, dev):
-        return dev
+        if os.path.isfile(dev):
+            return dev
+        else:
+            raise TypeError(dev + ' is not a regular file.')
 
     # Parse command line arguments
     def _parse(self):
