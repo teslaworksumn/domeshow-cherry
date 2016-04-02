@@ -1,4 +1,4 @@
-from src.patterns.Pattern import Pattern
+from src.pattern.Pattern import Pattern
 import random
 
 
