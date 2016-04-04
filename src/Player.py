@@ -1,5 +1,4 @@
-from rx import Observable
-from src.Output import FileOutput
+import rx
 import random
 
 # This class holds all of the dome's patterns and runs them
@@ -34,7 +33,6 @@ def bound_data(data):
     for i in range(len(data)):
         data[i] = bound_datum(data[i])
 
-
 def make_player(output, pattern_makers):
     """
     Factory for initializing observable graph and subscribing output to a
@@ -52,13 +50,13 @@ def make_player(output, pattern_makers):
         'patterns': _make_patterns_stream(pattern_makers)
     }
 
-    state_stream = rx.subject.Subject()
+    state_stream = rx.subjects.Subject()
 
     # Make data stream and subscribe output to it.
     state_stream \
         .map(lambda state: handle_state[state[0]](state)) \
         .switch_latest() \
-        .doaction(on_next = bound_data) \
+        .do_action(on_next = bound_data) \
         .subscribe(
             on_next = output.send,
             on_error = lambda e: output.close(str(e)),
@@ -68,7 +66,7 @@ def make_player(output, pattern_makers):
 
 def _make_solid_stream():
     def stream(state):
-        return Observable.never().start_with(state[1:4] * 40)
+        return rx.Observable.never().start_with(state[1:4] * 40)
 
     return stream
 
@@ -77,10 +75,10 @@ def _make_patterns_stream(pattern_makers):
         raise ValueError('pattern_makers is empty')
 
     def stream(state):
-        return Observable.repeat(None) \
+        return rx.Observable.repeat(None) \
             .map(lambda none: random.choice(pattern_makers)) \
             .map(lambda pmaker: pmaker()) \
-            .doaction(
+            .do_action(
                 on_error = lambda e: print("Pattern maker error: " + str(e))) \
             .retry() \
             .map(_error_handle_sub_stream) \
@@ -93,6 +91,6 @@ def _error_handle_sub_stream(args):
     (sub_stream, info) = args
 
     return sub_stream \
-        .doaction(on_error =
+        .do_action(on_error =
             lambda e: print("Sub stream error: {}, {}".format(info, e))) \
-        .catch(Observable.empty())
+        .catch(rx.Observable.empty())
