@@ -7,6 +7,7 @@ def get_observable(
         color1=None,
         color2=None,
         reverse=False,
+        tall=True,
         tick_period_ms=0,
         num_frames=-1):
 
@@ -15,10 +16,19 @@ def get_observable(
     if tick_period_ms <= 0: tick_period_ms = 200
     if num_frames < 0: num_frames = random.randint(3, 6) * 11
 
-    layer_buffer = ([color1] * 5) + ([color2] * 5) + ([color1] * 5)
+    if tall:
+        num_layers = 5
+        builder = PB.build5
+    else:
+        num_layers = 3
+        builder = PB.build3
+
+    layer_buffer = ([color1] * num_layers) \
+                   + ([color2] * num_layers) \
+                   + ([color1] * num_layers)
 
     states = [
-        PB.build_data(*(layer_buffer[i:i+5])) for i in range(11)
+        builder(*(layer_buffer[i:i+num_layers])) for i in range(11)
     ]
 
     increment = -1 if reverse else 1

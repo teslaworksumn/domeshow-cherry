@@ -1,3 +1,5 @@
+import random
+
 # Generates a random color as [r, g, b]
 def random_color():
     return [
@@ -8,13 +10,16 @@ def random_color():
 
 # Construct the data array from the patterns for each layer (repeated)
 # Layers are lists, multiples of 3, that contain channel rgb info
-def build_data(layer0, layer1, layer2, layer3, layer4):
+def build5(layer0, layer1, layer2, layer3, layer4):
     data = _build_layer(layer0, False) + \
            _build_layer(layer1, False) + \
            _build_layer(layer2, False) + \
            _build_layer(layer3, True) + \
            _build_layer(layer4, True)
     return data
+
+def build3(layer0, layer1, layer2):
+    return build5(layer0, layer0, layer1, layer1, layer2)
 
 # Helper function to create a layer's data output
 # small is whether this is layer 3 or 4, which only contain 5 panels
