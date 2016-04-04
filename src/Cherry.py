@@ -1,60 +1,20 @@
-#!python3 -i
+#!/usr/bin/env python3 -i
 
 import sys
 import os
+import rx
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
-from src.Player import Player
+
+import src.Player
+from src.Output import FileOutput
 from src.UserInput import UserInput
 import atexit
 
+output = FileOutput('/tmp/cherrylog')
 
-def help():
-    funcs = \
-"""
-off(): turns the dome off (solid black)
-solid(r, g, b): turns the dome a solid color (number 0 <= n <= 255)
-patloop(): loop through random patterns
-exit(): quits the program (call shutdown() first)
-"""
-    print(funcs)
+pattern_makers = [
+    lambda: ('Test pmaker', rx.Observable.repeat(list(range(144))).take(10))
+]
 
-
-args = UserInput()
-patterns = Patterns(device=args.get_output(), numch=120, tick_period_ms=1000)
-
-def off():
-    patterns.solid(0, 0, 0)
-
-def solid(r, g, b):
-    r = _get_ranged_int(r, 0, 255)
-    g = _get_ranged_int(g, 0, 255)
-    b = _get_ranged_int(b, 0, 255)
-    if r != None and g != None and b != None:
-        patterns.solid(r, g, b)
-
-def _get_ranged_int(x, low, high):
-    try:
-        x = int(x)
-        if x < low:
-            x = low
-        elif x > high:
-            x = high
-        return x
-    except TypeError:
-        print("Invalid value:", x)
-        return None
-
-def patloop():
-    patterns.start()
-
-# Doesn't work...
-def shutdown():
-    patterns.shutdown()
-
-# Stop pattern observables when exiting
-atexit.register(patterns.shutdown)
-
-# Print help text
-help()
-
+player = Player.make_player(output, pattern_makers)
 

@@ -1,4 +1,10 @@
-
+# Generates a random color as [r, g, b]
+def random_color():
+    return [
+        random.randint(0, 255),
+        random.randint(0, 255),
+        random.randint(0, 255)
+    ]
 
 # Construct the data array from the patterns for each layer (repeated)
 # Layers are lists, multiples of 3, that contain channel rgb info

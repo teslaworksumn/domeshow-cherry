@@ -1,17 +1,21 @@
 
 
 class FileOutput:
-    def __init__(self, device):
-        self._device = device
+    def __init__(self, filename):
+        self._filename = filename
+        self._f = open(filename, 'a')
 
-    # Data is a dictionary of length 120 (40 lights * 3 channels)
+    def close(self, message):
+        print('Closing FileOutput {0}: {1}'.format(self._filename, message))
+        self._f.close()
+
+    # Data is a dictionary of length 9 * 16 = 144
     # where each element is the 8-bit value for that channel
     def send(self, data):
         output = ''
         for d in data:
-            output += str(d)
-
-        with open(self._device, 'a') as f:
-            f.write(output + '\n')
+            output += str(d) + ', '
+        
+        self._f.write(output + '\n')
 
 

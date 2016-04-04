@@ -1,94 +1,98 @@
-import random
-import rx.subjects.subject as rxsubject
 from rx import Observable
 from src.Output import FileOutput
-
-from src.pattern.TargetPulse import TargetPulse
-from src.pattern.FullRandom import FullRandom
-
-## General idea
-# 
-# make pattern stream:
-# 1. Observable.repeat(None)
-# 2. map(getRandomIndex)
-# 3. map(lambda i: patterns[i])
-# 4. concat_all()
-#
-# state stream: will be a stream of PlayerState
-# enum PlayerState {
-#   Patterns,
-#   Solid(i8 r, i8 g, i8 b),
-# }
-#
-# data stream:
-# 1. state_stream
-# 2. map(state -> match (state) {
-#        Solid(r, g, b) = Observable.never().start_with([r, g, b] * 40),
-#        Pattern = make_pattern_stream(),
-#    })
-# 3. switch()
-
+import random
 
 # This class holds all of the dome's patterns and runs them
 class Player:
+    """
+    Wraps around a stream of PlayerState, where PlayerState is a tagged union
+    PlayerState = Patterns
+                | Solid(i8 r, i8 g, i8 b)
+    Implemented as lists, with variant tag as first index.
+    """
 
-    def __init__(self, device, num_channels):
-        self._num_channels = num_channels
-        self._output = FileOutput(device)
-        self._state_stream = rxsubject.Subject()
-        self.patterns = []
+    def __init__(self, state_stream):
+        self._state_stream = state_stream
 
-        self._data_stream
-
-    # Starts running patterns
-    def start(self):
-        self._islooping = True
-        self._next()
-
-    # Stops all observables
     def shutdown(self):
-        self._islooping = False
-        self._stopstream.on_next(None)
+        self._state_stream.on_completed()
 
-    # Make the dome a solid color
-    # Because the boards persistently hold their color, only send one set of data out
-    def solid(self, r, g, b):
-        self.shutdown()
-        data = [r, g, b] * self._num_channels
-        self._output.send(data)
+    def run_solid(self, r, g, b):
+        self._state_stream.on_next(['solid', r, g, b])
 
-    # Get the next pattern to play, and start it
-    def _next(self):
-        if self._islooping:
-            self._stopstream.on_next(None)
+    def run_patterns(self):
+        self._state_stream.on_next(['patterns'])
 
-            # TODO switch back (testing)
-            # index = random.randint(0, len(self.patterns)-1)
-            index = 0
+def bound_datum(x):
+    if x < 0:
+        return 0
+    elif x > 255:
+        return 255
+    return x
 
-            Observable.interval(self._tick_period_ms)\
-                .take_until(self._stopstream)\
-                .take(self._frames_per_pattern)\
-                .map(lambda a,b: self.patterns[index].getframe(a))\
-                .subscribe(self._output.send, lambda e: print(e), lambda: self._next())
+def bound_data(data):
+    for i in range(len(data)):
+        data[i] = bound_datum(data[i])
 
-    def _rotatable_horizontal_wave(self, frame):
-        pass
 
-    def _rotatable_horizontal_wave_continuous(self, frame):
-        pass
+def make_player(output, pattern_makers):
+    """
+    Factory for initializing observable graph and subscribing output to a
+    player. The output will be closed when the player is shutdown.
 
-    def _beach_ball_of_death(self, frame):
-        pass
+    Args:
+        output: Output to write to.
+        pattern_makers: List of functions taking no args and returning a
+            (Observable<[u8]>, info object).
+    """
 
-    def _solid_fade(self, frame):
-        pass
+    # Switch on state variants
+    handle_state = {
+        'solid': _make_solid_stream(),
+        'patterns': _make_patterns_stream(pattern_makers)
+    }
 
-    def _full_random_fade(self, frame):
-        pass
+    state_stream = rx.subject.Subject()
 
-    def _spiral(self, frame):
-        pass
+    # Make data stream and subscribe output to it.
+    state_stream \
+        .map(lambda state: handle_state[state[0]](state)) \
+        .switch_latest() \
+        .doaction(on_next = bound_data) \
+        .subscribe(
+            on_next = output.send,
+            on_error = lambda e: output.close(str(e)),
+            on_completed = lambda: output.close('Completed'))
+    
+    return Player(state_stream)
 
-    def _sets_of_5(self, frame):
-        pass
+def _make_solid_stream():
+    def stream(state):
+        return Observable.never().start_with(state[1:4] * 40)
+
+    return stream
+
+def _make_patterns_stream(pattern_makers):
+    if len(pattern_makers) == 0:
+        raise ValueError('pattern_makers is empty')
+
+    def stream(state):
+        return Observable.repeat(None) \
+            .map(lambda none: random.choice(pattern_makers)) \
+            .map(lambda pmaker: pmaker()) \
+            .doaction(
+                on_error = lambda e: print("Pattern maker error: " + str(e))) \
+            .retry() \
+            .map(_error_handle_sub_stream) \
+            .concat_all()
+
+    return stream
+
+# Ensure that a erroring sub stream completes gracefully
+def _error_handle_sub_stream(args):
+    (sub_stream, info) = args
+
+    return sub_stream \
+        .doaction(on_error =
+            lambda e: print("Sub stream error: {}, {}".format(info, e))) \
+        .catch(Observable.empty())
