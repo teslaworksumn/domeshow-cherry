@@ -13,7 +13,7 @@ def build_data(layer0, layer1, layer2, layer3, layer4):
 # Helper function to create a layer's data output
 # small is whether this is layer 3 or 4, which only contain 5 panels
 # layer is a list of rgb values; must be multiple of 3
-def _build_layer(self, layer, small):
+def _build_layer(layer, small):
     if len(layer) % 3 != 0:
         raise ValueError(\
             'Expected layer length divisible by 3, was ' + str(len(layer)))
