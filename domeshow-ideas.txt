@@ -1,0 +1,31 @@
+40 triangles total
+ - 6 pentagons (one of them is on top)
+ - 2 sets of 5 eq. triangles
+
+ Patterns:
+  - info:
+    - Pattern controlled by human
+    - intensity controlled separately
+
+  - (1) Completely solid dome color
+  - (6) Beach ball of death (a la mac)
+  - (4) Horizontal wave (degree offset)
+    -  (4.5) Continuous rotation where degree changed
+    - bounce back up
+  - (8) Penta/hexagons + Triangles (manual control?)
+  - (2) full random (+ threshold for colors)
+    - random color fade per triangle
+    - beat trigger- set fade rate by BPM
+  	- solid color fade
+  - (3) wave down from top (think target)
+    - bounce back up
+    - trigger on beat, speed based on BPM
+  - (8) Spiral
+  - (5) Counter-rotating circles
+  - (7) top-half + bottom-half / layers
+
+  Beat detection send a signal to the pattern to do an event
+  Patterns can be set by BPM
+
+  Upper intensity limit in software (in case we hit a limit on generator power)
+
