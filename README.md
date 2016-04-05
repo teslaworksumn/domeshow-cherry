@@ -1,7 +1,7 @@
 # cherry
 The Doooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooome Controller
 
-# What the fuck we're doing
+# What we're doing
 
 This will send various patterns to light the Dome as **some binary protocol** to an Arduino (blossom).
 This will run an interactive Python 3 shell to switch between running patterns and running a solid.
