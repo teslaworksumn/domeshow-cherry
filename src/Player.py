@@ -50,12 +50,19 @@ def make_player(output, pattern_makers):
         'patterns': _make_patterns_stream(pattern_makers)
     }
 
+    def _passthrough(acc, x):
+        for i in range(len(x)):
+            if x[i] == -1:
+                x[i] = acc[i]
+        return x
+
     state_stream = rx.subjects.Subject()
 
     # Make data stream and subscribe output to it.
     state_stream \
         .map(lambda state: handle_state[state[0]](state)) \
         .switch_latest() \
+        .scan(_passthrough, [0] * 120) \
         .do_action(on_next = bound_data) \
         .subscribe(
             on_next = output.send,
