@@ -1,12 +1,16 @@
 import rx
 import random
 
+def _nop(unused = None):
+    pass
+
 # This class holds all of the dome's patterns and runs them
 class Player:
     """
     Wraps around a stream of PlayerState, where PlayerState is a tagged union
-    PlayerState = Patterns
+    PlayerState = Live
                 | Solid(i8 r, i8 g, i8 b)
+                | Pattern(index i)
     Implemented as lists, with variant tag as first index.
     """
 
@@ -19,19 +23,11 @@ class Player:
     def run_solid(self, r, g, b):
         self._state_stream.on_next(['solid', r, g, b])
 
-    def run_patterns(self):
-        self._state_stream.on_next(['patterns'])
+    def run_live(self):
+        self._state_stream.on_next(['live'])
 
-def bound_datum(x):
-    if x < 0:
-        return 0
-    elif x > 255:
-        return 255
-    return x
-
-def bound_data(data):
-    for i in range(len(data)):
-        data[i] = bound_datum(data[i])
+    def run_pattern(self, i):
+        self._state_stream.on_next(['pattern', i])
 
 def make_player(output, pattern_makers):
     """
@@ -44,10 +40,14 @@ def make_player(output, pattern_makers):
             (Observable<[u8]>, info object).
     """
 
+    if len(pattern_makers) == 0:
+        raise ValueError('pattern_makers is empty')
+
     # Switch on state variants
     handle_state = {
         'solid': _make_solid_stream(),
-        'patterns': _make_patterns_stream(pattern_makers)
+        'live': _make_live_stream(pattern_makers),
+        'pattern': _make_pattern_stream(pattern_makers)
     }
 
     def _passthrough(acc, x):
@@ -63,7 +63,7 @@ def make_player(output, pattern_makers):
         .map(lambda state: handle_state[state[0]](state)) \
         .switch_latest() \
         .scan(_passthrough, [0] * 120) \
-        .do_action(on_next = bound_data) \
+        .do_action(_bound_data, _nop, _nop) \
         .subscribe(
             on_next = output.send,
             on_error = lambda e: output.close(str(e)),
@@ -77,27 +77,46 @@ def _make_solid_stream():
 
     return stream
 
-def _make_patterns_stream(pattern_makers):
-    if len(pattern_makers) == 0:
-        raise ValueError('pattern_makers is empty')
+def _make_pattern_stream(pattern_makers):
+    def stream(state):
+        try:
+            return pattern_makers[state[1]]()[0]
+        except Exception as e:
+            print("Pattern maker {} error: {}".format(state[1], e))
+
+    return stream
+
+def _make_live_stream(pattern_makers):
+    log_err = lambda e: print("Pattern maker error: " + str(e))
 
     def stream(state):
         return rx.Observable.repeat(None) \
             .map(lambda none: random.choice(pattern_makers)) \
             .map(lambda pmaker: pmaker()) \
-            .do_action(
-                on_error = lambda e: print("Pattern maker error: " + str(e))) \
+            .do_action(_nop, log_err, _nop) \
             .retry() \
             .map(_error_handle_sub_stream) \
             .concat_all()
 
     return stream
 
-# Ensure that a erroring sub stream completes gracefully
-def _error_handle_sub_stream(args):
-    (sub_stream, info) = args
+# Ensure that a erroring sub stream completes gracefully        
+def _error_handle_sub_stream(args):       
+    (sub_stream, info) = args     
 
+    log_err = lambda e: print("Sub stream error: {}, {}".format(info, e))
+     
     return sub_stream \
-        .do_action(on_error =
-            lambda e: print("Sub stream error: {}, {}".format(info, e))) \
+        .do_action(_nop, log_err, _nop) \
         .catch(rx.Observable.empty())
+
+def _bound_data(data):
+    for i in range(len(data)):
+        data[i] = _bound_datum(data[i])
+
+def _bound_datum(x):
+    if x < 0:
+        return 0
+    elif x > 255:
+        return 255
+    return x

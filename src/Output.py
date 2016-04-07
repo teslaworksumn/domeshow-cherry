@@ -6,11 +6,7 @@ class ConsoleOutput:
     # Data is a dictionary of length 9 * 16 = 144
     # where each element is the 8-bit value for that channel
     def send(self, data):
-        output = ''
-        for d in data:
-            output += str(d) + ', '
-        
-        print(output)
+        print('ConsoleOutput', len(data), data)
 
 class FileOutput:
     def __init__(self, filename):

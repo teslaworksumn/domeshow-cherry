@@ -37,8 +37,5 @@ def _build_layer(layer, small):
         index = (i % colors) * 3
         data += layer[index:index + 3]
 
-        # Skip every other triangle on small layers
-        if small: data += [0, 0, 0]
-
     return data
 
