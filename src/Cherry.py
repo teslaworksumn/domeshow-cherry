@@ -2,17 +2,19 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
-import rx
 import src.Player as Player
 import src.Output as output
 import src.pattern.FullRandom as full_random
+import src.pattern.Tsunami as tsunami
+import src.pattern.Sarlacc as sarlacc
 from src.UserInput import UserInput
-import atexit
 
 user_input = UserInput()
 
 pattern_makers = [
-    lambda: (full_random.get_observable(), 'Full Random Test')
+    lambda: (full_random.get_observable(), 'Full Random Test'),
+    lambda: (tsunami.get_observable(), 'Tsunami'),
+    lambda: (sarlacc.get_observable(), 'Sarlacc')
 ]
 
 fp = Player.make_player(user_input.output, pattern_makers)

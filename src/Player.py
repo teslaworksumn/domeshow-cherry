@@ -73,7 +73,7 @@ def make_player(output, pattern_makers):
 
 def _make_solid_stream():
     def stream(state):
-        return rx.Observable.never().start_with(state[1:4] * 40)
+        return rx.Observable.just(state[1:4] * 40)
 
     return stream
 
@@ -83,6 +83,7 @@ def _make_pattern_stream(pattern_makers):
             return pattern_makers[state[1]]()[0]
         except Exception as e:
             print("Pattern maker {} error: {}".format(state[1], e))
+            return rx.Observable.empty()
 
     return stream
 
