@@ -108,7 +108,7 @@ def _error_handle_sub_stream(args):
      
     return sub_stream \
         .do_action(_nop, log_err, _nop) \
-        .catch(rx.Observable.empty())
+        .catch_exception(rx.Observable.empty())
 
 def _bound_data(data):
     for i in range(len(data)):
