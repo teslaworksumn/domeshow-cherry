@@ -2,6 +2,11 @@ import src.pattern.PatternBuilder as PB
 from rx import Observable
 import random
 
+def _set_colors(colors):
+    if colors is None: return [PB.random_color() for i in range(5)]
+    if len(colors) < 5:
+        print('Need at least five colors for CounterRotatingCircles')
+        return [PB.random_color() for i in range(5)]
 
 def _set_colors(colors):
     if colors is None or len(colors) < 5:
