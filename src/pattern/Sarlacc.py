@@ -12,5 +12,5 @@ def get_observable(color=None, offset=0, tick_period_ms=0):
     frames = [PB.build10(layers, offset) for layers in layer_sets]
 
     return Observable.interval(tick_period_ms) \
-        .take(10) \
+        .take(len(frames)) \
         .map(lambda i: frames[i])

@@ -7,14 +7,16 @@ import src.Output as output
 import src.pattern.FullRandom as full_random
 import src.pattern.Tsunami as tsunami
 import src.pattern.Sarlacc as sarlacc
+import src.pattern.Radar as radar
 from src.UserInput import UserInput
 
 user_input = UserInput()
 
 pattern_makers = [
-    lambda: (full_random.get_observable(), 'Full Random Test'),
+    lambda: (full_random.get_observable(), 'Full Random'),
     lambda: (tsunami.get_observable(), 'Tsunami'),
-    lambda: (sarlacc.get_observable(), 'Sarlacc')
+    lambda: (sarlacc.get_observable(), 'Sarlacc'),
+    lambda: (radar.get_observable(), 'Radar')
 ]
 
 fp = Player.make_player(user_input.output, pattern_makers)
