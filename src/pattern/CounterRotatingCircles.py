@@ -3,14 +3,8 @@ from rx import Observable
 import random
 
 def _set_colors(colors):
-    if colors is None: return [PB.random_color() for i in range(5)]
-    if len(colors) < 5:
-        print('Need at least five colors for CounterRotatingCircles')
-        return [PB.random_color() for i in range(5)]
-
-def _set_colors(colors):
     if colors is None or len(colors) < 5:
-        return [c for i in range(5) for c in PB.random_color()]
+        return PB.random_colors(5)
     return colors
 
 def get_observable(colorsA=None, colorsB=None, tall=None, tick_period_ms=0):
