@@ -9,23 +9,20 @@ This will run an interactive Python 3 shell to switch between running patterns a
 Patterns will each run for some period of time and then trigger a callback.
 In pattern mode we will run patterns continuously. Patterns will run some
 periodic signal internally and on each tick output their current state.
-Patterns should not take more than 5 sec, so they don't delay any switch to
-solid/off state.
 
-# CLI
+# How to run
 
 ```
-cherry output=<device>
+make run
 ```
 
 # Patterns
 
 - Solid
 - Full random
-- Target
-- Reverse target
-- Rotatable horizontal wave
-- Rotatable horizontal continuous wave
+- Radar
+- Sarlacc
+- Tsunami
 - Beach ball of death
 - Counter rotating circles
 - Solid fade
