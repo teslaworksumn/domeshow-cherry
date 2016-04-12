@@ -20,7 +20,29 @@ def build5(layers):
     return data
 
 def build3(layers):
-    return build5([layers[0], layers[0], layers[1], layers[1], layers[2]])
+    # bottom is the simple alternation between layer0 and layer1
+    # middle follows the pattern layer2 layer2 layer3
+    # This is because there are 10 layer2 triangles, but only 5 layer3 triangles
+    # top is simply layer4
+    bottom = _build_layer(layers[0], 20)
+    middle = _build_layer(layers[1], 15)
+    top = _build_layer(layers[2], 5)
+
+    layer0 = [0] * 30
+    layer1 = [0] * 30
+    layer2 = [0] * 30
+    layer3 = [0] * 15
+    layer4 = top
+
+    for i in range(6):
+        layer2[i::6] = middle[i::9]
+    for i in range(3):
+        layer0[i::3] = bottom[i::6]
+        layer1[i::3] = bottom[i + 3::6]
+        layer3[i::3] = middle[i + 6::9]
+
+    return layer0 + layer1 + layer2 + layer3 + layer4
+
 
 def build10(layers, offset):
     return \
