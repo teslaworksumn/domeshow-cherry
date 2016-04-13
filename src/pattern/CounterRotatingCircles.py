@@ -2,9 +2,10 @@ import src.pattern.PatternBuilder as PB
 from rx import Observable
 import random
 
+
 def _set_colors(colors):
     if colors is None or len(colors) < 5:
-        return PB.random_colors(5)
+        return [c for i in range(5) for c in PB.random_color()]
     return colors
 
 def get_observable(colorsA=None, colorsB=None, tall=None, tick_period_ms=0):

@@ -8,12 +8,6 @@ def random_color():
         random.randint(0, 255)
     ]
 
-def random_colors(num):
-    rand_colors = []
-    for i in range(num):
-        rand_colors += random_color()
-    return rand_colors
-
 # Construct the data array from the patterns for each layer (repeated)
 # Layers are lists, multiples of 3, that contain channel rgb info
 def build5(layers):
