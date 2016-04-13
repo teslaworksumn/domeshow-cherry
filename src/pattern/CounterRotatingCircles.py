@@ -1,30 +1,29 @@
-from src.pattern.Pattern import Pattern
+import src.pattern.PatternBuilder as PB
+from rx import Observable
 import random
 
 
-class CounterRotatingCircles(Pattern):
+def _set_colors(colors):
+    if colors is None or len(colors) < 5:
+        return [c for i in range(5) for c in PB.random_color()]
+    return colors
 
-    # numcolors is number of distinct colors in a layer
-    def __init__(self, numcolors):
-        super().__init__()
-        self.states = []
-        self._numcolors = numcolors
-        self.initialize()
+def get_observable(colorsA=None, colorsB=None, tall=None, tick_period_ms=0):
+    colors = [_set_colors(colorsA), _set_colors(colorsB)]
+    if tall is None: tall = (random.randint(0, 1) == 1)
+    if tick_period_ms <= 0: tick_period_ms = 200
 
-    def initialize(self):
-        colorsA = []
-        colorsB = []
-        for i in range(self._numcolors):
-            colorsA += [i, i, i]#[random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
-            colorsB += [i+2, i+2, i+2]#[random.randint(0, 255), random.randint(0, 255), random.randint(0, 255)]
+    frames = [None] * 10
+    for i in range(10):
+        # Mutated, so shift 1 and -1 from last shift (cumulative shift)
+        shifted = [PB.shift(1, colors[0]), PB.shift(-1, colors[1])]
+        if tall:
+            colors = [shifted[i % 2] for i in range(5)]
+            frames[i] = PB.build5(colors)
+        else:
+            colors = [shifted[i % 2] for i in range(3)]
+            frames[i] = PB.build3(colors)
 
-        # Double size of color lists to allow for simple modulo slicing
-        self.colorsA = colorsA + colorsA
-        self.colorsB = colorsB + colorsB
-
-    def getframe(self, frame):
-        indexA = frame % self._numcolors
-        indexB = (self._numcolors - frame - 1) % self._numcolors
-        layerA = self.colorsA[3*indexA:3*(indexA+self._numcolors)]
-        layerB = self.colorsB[3*indexB:3*(indexB+self._numcolors)]
-        return self._patbuilder.build_data(layerA, layerB, layerA, layerB, layerA)
+    return Observable.interval(tick_period_ms) \
+        .take(len(frames)) \
+        .map(lambda i: frames[i])

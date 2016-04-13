@@ -46,14 +46,14 @@ def build3(layers):
 
 def build10(layers, offset):
     return \
-        _shift(offset, _build_layer(layers[0], 5) + _build_layer(layers[1], 5)) + \
-        _shift(offset, _build_layer(layers[2], 5) + _build_layer(layers[3], 5)) + \
-        _shift(offset, _build_layer(layers[4], 5) + _build_layer(layers[5], 5)) + \
-        _shift(offset, _build_layer(layers[6], 3) + _build_layer(layers[7], 2)) + \
-        _shift(offset, _build_layer(layers[8], 3) + _build_layer(layers[9], 2))
+        shift(offset, _build_layer(layers[0], 5) + _build_layer(layers[1], 5)) + \
+        shift(offset, _build_layer(layers[2], 5) + _build_layer(layers[3], 5)) + \
+        shift(offset, _build_layer(layers[4], 5) + _build_layer(layers[5], 5)) + \
+        shift(offset, _build_layer(layers[6], 3) + _build_layer(layers[7], 2)) + \
+        shift(offset, _build_layer(layers[8], 3) + _build_layer(layers[9], 2))
 
 # Shifts the colors in a layer left by a number of spots
-def _shift(offset, layer):
+def shift(offset, layer):
     offset = (offset * 3) % len(layer)
     return layer[offset:] + layer[:offset]
 
