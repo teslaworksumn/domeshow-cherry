@@ -9,7 +9,7 @@ class Player:
     """
     Wraps around a stream of PlayerState, where PlayerState is a tagged union
     PlayerState = Live
-                | Solid(i8 r, i8 g, i8 b)
+                | Solid(u8 r, u8 g, u8 b)
                 | Pattern(index i)
     Implemented as lists, with variant tag as first index.
     """
