@@ -23,4 +23,4 @@ pattern_makers = [
 
 fp = Player.make_player(user_input.output, pattern_makers)
 cp = Player.make_player(output.ConsoleOutput(), pattern_makers)
-
+sp = Player.make_player(output.SerialOutput(user_input.output), pattern_makers)
