@@ -3,7 +3,9 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
 import src.Player as Player
-import src.Output as output
+from src.output.FileOutput import FileOutput as FileOutput
+from src.output.ConsoleOutput import ConsoleOutput as ConsoleOutput
+from src.output.SerialOutput import SerialOutput as SerialOutput
 import src.pattern.FullRandom as full_random
 import src.pattern.Tsunami as tsunami
 import src.pattern.Sarlacc as sarlacc
@@ -21,6 +23,6 @@ pattern_makers = [
     lambda: (crc.get_observable(), 'Counter Rotating Circles')
 ]
 
-fp = Player.make_player(user_input.output, pattern_makers)
-cp = Player.make_player(output.ConsoleOutput(), pattern_makers)
-sp = Player.make_player(output.SerialOutput(user_input.output), pattern_makers)
+fp = Player.make_player(FileOutput(user_input.output), pattern_makers)
+cp = Player.make_player(ConsoleOutput(), pattern_makers)
+sp = Player.make_player(SerialOutput(user_input.output), pattern_makers)
