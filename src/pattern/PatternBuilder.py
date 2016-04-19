@@ -48,21 +48,39 @@ def build3(layers):
 
 
 def build10(layers, displacement):
-    return \
-        shift(displacement, _build_layer(layers[0], 5) + _build_layer(layers[1], 5)) + \
-        shift(displacement, _build_layer(layers[2], 5) + _build_layer(layers[3], 5)) + \
-        shift(displacement, _build_layer(layers[4], 5) + _build_layer(layers[5], 5)) + \
-        shift(displacement, _build_layer(layers[6], 3) + _build_layer(layers[7], 2)) + \
-        shift(displacement, _build_layer(layers[8], 3) + _build_layer(layers[9], 2))
+    data = [0] * 120
+
+    _build_layer(data, 0, layers[0], 5)
+    _build_layer(data, 15, layers[1], 5)
+    _build_layer(data, 30, layers[2], 5)
+    _build_layer(data, 45, layers[3], 5)
+    _build_layer(data, 60, layers[4], 5)
+    _build_layer(data, 75, layers[5], 5)
+    _build_layer(data, 90, layers[6], 3)
+    _build_layer(data, 99, layers[7], 2)
+    _build_layer(data, 105, layers[8], 3)
+    _build_layer(data, 114, layers[9], 2)
+
+    shift(data, 0, 10, displacement)
+    shift(data, 30, 10, displacement)
+    shift(data, 60, 10, displacement)
+    shift(data, 90, 5, displacement // 2)
+    shift(data, 105, 5, displacement // 2)
+
+    return data
 
 # Shifts the colors in a layer left by a number of spots
-def shift(data, offset, length, displacement):
-    displacement *= 3 # (displacement * 3) % len(layer)
-    buf_left = data[offset:offset + displacement]
-    buf_right = data[offset + displacement:offset + length]
+# offset is in channels (total 120)
+# total_length and displacement are in triangles (total 40)
+def shift(data, offset, total_length, displacement):
+    d = displacement * 3
+    l = (total_length - displacement) * 3
 
-    data[offset:offset + ]
-    return layer[displacement:] + layer[:displacement]
+    buf_left = data[offset:offset + d]
+    buf_right = data[offset + d:offset + d + l]
+
+    data[offset:offset + l] = buf_right
+    data[offset + l:offset + l + d] = buf_left
 
 # Helper function to create a layer's data output
 # data is the array to modify and offset is how far to start writing
