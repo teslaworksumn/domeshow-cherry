@@ -32,7 +32,6 @@ def build3(layers):
 
     _build_layer(buf, 0, layers[0], 20)
     _build_layer(buf, 60, layers[1], 15)
-    _build_layer(data, 105, layers[2], 5)
 
     for i in range(3): # layer 0
         data[i:30:3] = data[i:60:6]
@@ -43,21 +42,27 @@ def build3(layers):
     for i in range(3): # layer 3
         data[i+90:105:3] = data[i+66:105:9]
 
+    _build_layer(data, 105, layers[2], 5) # layer 4
+
     return data
 
 
-def build10(layers, offset):
+def build10(layers, displacement):
     return \
-        shift(offset, _build_layer(layers[0], 5) + _build_layer(layers[1], 5)) + \
-        shift(offset, _build_layer(layers[2], 5) + _build_layer(layers[3], 5)) + \
-        shift(offset, _build_layer(layers[4], 5) + _build_layer(layers[5], 5)) + \
-        shift(offset, _build_layer(layers[6], 3) + _build_layer(layers[7], 2)) + \
-        shift(offset, _build_layer(layers[8], 3) + _build_layer(layers[9], 2))
+        shift(displacement, _build_layer(layers[0], 5) + _build_layer(layers[1], 5)) + \
+        shift(displacement, _build_layer(layers[2], 5) + _build_layer(layers[3], 5)) + \
+        shift(displacement, _build_layer(layers[4], 5) + _build_layer(layers[5], 5)) + \
+        shift(displacement, _build_layer(layers[6], 3) + _build_layer(layers[7], 2)) + \
+        shift(displacement, _build_layer(layers[8], 3) + _build_layer(layers[9], 2))
 
 # Shifts the colors in a layer left by a number of spots
-def shift(offset, layer):
-    offset = (offset * 3) % len(layer)
-    return layer[offset:] + layer[:offset]
+def shift(data, offset, length, displacement):
+    displacement *= 3 # (displacement * 3) % len(layer)
+    buf_left = data[offset:offset + displacement]
+    buf_right = data[offset + displacement:offset + length]
+
+    data[offset:offset + ]
+    return layer[displacement:] + layer[:displacement]
 
 # Helper function to create a layer's data output
 # data is the array to modify and offset is how far to start writing
