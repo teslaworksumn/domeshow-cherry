@@ -8,7 +8,7 @@ import src.pattern.FullRandom as full_random
 import src.pattern.Tsunami as tsunami
 import src.pattern.Sarlacc as sarlacc
 import src.pattern.Radar as radar
-import src.pattern.CounterRotatingCircles as crc
+import src.pattern.Illusion as illusion
 from src.UserInput import UserInput
 
 user_input = UserInput()
@@ -18,7 +18,7 @@ pattern_makers = [
     lambda: (tsunami.get_observable(), 'Tsunami'),
     lambda: (sarlacc.get_observable(), 'Sarlacc'),
     lambda: (radar.get_observable(), 'Radar'),
-    lambda: (crc.get_observable(), 'Counter Rotating Circles')
+    lambda: (illusion.get_observable(), 'Illusion')
 ]
 
 fp = Player.make_player(user_input.output, pattern_makers)
