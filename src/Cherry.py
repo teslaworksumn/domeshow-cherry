@@ -23,6 +23,14 @@ pattern_makers = [
     lambda: (crc.get_observable(), 'Counter Rotating Circles')
 ]
 
-fp = Player.make_player(FileOutput(user_input.output), pattern_makers)
 cp = Player.make_player(ConsoleOutput(), pattern_makers)
-sp = Player.make_player(SerialOutput(user_input.output), pattern_makers)
+try:
+    fp = Player.make_player(FileOutput(user_input.output), pattern_makers)
+except Exception:
+    print('Failed to open FileOutput with output "', user_input.output, '"', sep='')
+
+try:
+    sp = Player.make_player(SerialOutput(user_input.output), pattern_makers)
+except Exception:
+    print('Failed to open SerialOutput with output "', user_input.output, '"', sep='')
+

@@ -14,8 +14,7 @@ class UserInput:
         parser.add_argument(
             '-o',
             '--output',
-            default='/tmp/cherrylog',
-            type=FileOutput)
+            default='/tmp/cherrylog')
         return parser.parse_args()
 
 
