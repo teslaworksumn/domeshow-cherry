@@ -60,6 +60,8 @@ def make_player(output, pattern_makers):
         .map(lambda state: handle_state[state[0]](state)) \
         .switch_latest() \
         .scan(_passthrough, ([0] * 120, 0)) \
+        .scan(_interpolate(50), rx.Observable.empty()) \
+        .concat_all() \
         .map(_timed_frame) \
         .concat_all() \
         .do_action(_bound_data, _nop, _nop) \
@@ -67,9 +69,8 @@ def make_player(output, pattern_makers):
             on_next = output.send,
             on_error = lambda e: output.close(str(e)),
             on_completed = lambda: output.close('Completed'))
-        # .scan(_interpolate(50), None) \
-        # .concat_all() \
     
+        #.do_action(lambda i: print('yo', i), _nop, _nop) \
     return Player(state_stream)
 
 def _timed_frame(frame_and_time):
@@ -83,10 +84,10 @@ def _interpolate(period):
     prev = [0] * 120
 
     def helper(acc, x):
+        nonlocal prev
         x_f, x_t = x
-        frames = [(_inter(prev, x_f, t / x_t), t) \
-            for t in range(period, x_t - period, period)]
-        frames.append(x)
+        #frames = [(_inter(prev, x_f, t / x_t), t) \
+        frames = [(prev, t) for t in range(period, x_t, period)] + [x]
         prev = x
 
         return rx.Observable.from_list(frames)
@@ -148,6 +149,7 @@ def _bound_data(data):
         data[i] = _bound_datum(data[i])
 
 def _bound_datum(x):
+    print('bound datum', x)
     if x < 0:
         return 0
     elif x > 255:
