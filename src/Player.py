@@ -20,6 +20,9 @@ class Player:
     def shutdown(self):
         self._state_stream.on_completed()
 
+    def off(self):
+        self.run_solid(0, 0, 0)
+
     def run_solid(self, r, g, b):
         self._state_stream.on_next(['solid', r, g, b])
 
@@ -50,19 +53,15 @@ def make_player(output, pattern_makers):
         'pattern': _make_pattern_stream(pattern_makers)
     }
 
-    def _passthrough(acc, x):
-        for i in range(len(x)):
-            if x[i] == -1:
-                x[i] = acc[i]
-        return x
-
     state_stream = rx.subjects.Subject()
 
     # Make data stream and subscribe output to it.
     state_stream \
         .map(lambda state: handle_state[state[0]](state)) \
         .switch_latest() \
-        .scan(_passthrough, [0] * 120) \
+        .scan(_passthrough, ([0] * 120, 0)) \
+        .map(_timed_frame) \
+        .concat_all() \
         .do_action(_bound_data, _nop, _nop) \
         .subscribe(
             on_next = output.send,
@@ -70,6 +69,17 @@ def make_player(output, pattern_makers):
             on_completed = lambda: output.close('Completed'))
     
     return Player(state_stream)
+
+def _timed_frame(frame_and_time):
+    frame, time = frame_and_time
+    return rx.Observable.just(frame).delay(time)
+
+def _passthrough(acc, frame_and_time):
+    x = frame_and_time[0]
+    for i in range(len(x)):
+        if x[i] == -1:
+            x[i] = acc[i]
+    return frame_and_time
 
 def _make_solid_stream():
     def stream(state):
