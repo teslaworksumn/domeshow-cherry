@@ -97,6 +97,7 @@ def _make_live_stream(pattern_makers):
             .do_action(_nop, log_err, _nop) \
             .retry() \
             .map(_error_handle_sub_stream) \
+            .do_action(lambda c: print('New substream'), _nop, _nop) \
             .concat_all()
 
     return stream

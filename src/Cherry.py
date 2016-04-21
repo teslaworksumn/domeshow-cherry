@@ -14,9 +14,9 @@ from src.UserInput import UserInput
 user_input = UserInput()
 
 pattern_makers = [
-    lambda: (full_random.get_observable(), 'Full Random'),
-    lambda: (tsunami.get_observable(), 'Tsunami'),
-    lambda: (sarlacc.get_observable(), 'Sarlacc')
+    lambda: (full_random.get_observable(), 'Full Random')
+    #lambda: (tsunami.get_observable(), 'Tsunami'),
+    #lambda: (sarlacc.get_observable(), 'Sarlacc')
     #lambda: (radar.get_observable(tall = True), 'Radar'),
     #lambda: (illusion.get_observable(), 'Illusion')
 ]
