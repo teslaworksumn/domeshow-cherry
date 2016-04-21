@@ -87,6 +87,7 @@ def shift(data, offset, total_length, displacement):
 # layer is a list of rgb values; must be multiple of 3
 # triangle_count is the number of panels/triangles in this layer
 def _build_layer(data, offset, layer, triangle_count):
+    print('yo 3', layer)
     if len(layer) % 3 != 0:
         raise ValueError( \
             'Expected layer length divisible by 3, was ' + str(len(layer)))
