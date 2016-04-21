@@ -67,13 +67,32 @@ def make_player(output, pattern_makers):
             on_next = output.send,
             on_error = lambda e: output.close(str(e)),
             on_completed = lambda: output.close('Completed'))
+        # .scan(_interpolate(50), None) \
+        # .concat_all() \
     
     return Player(state_stream)
-        #.do_action(_nop, print, _nop) \
 
 def _timed_frame(frame_and_time):
     frame, time = frame_and_time
     return rx.Observable.just(frame).delay(time)
+
+def _inter(a, b, fraction):
+    return a
+
+def _interpolate(period):
+    prev = [0] * 120
+
+    def helper(acc, x):
+        x_f, x_t = x
+        frames = [(_inter(prev, x_f, t / x_t), t) \
+            for t in range(period, x_t - period, period)]
+        frames.append(x)
+        prev = x
+
+        return rx.Observable.from_list(frames)
+
+    return helper
+
 
 def _passthrough(prev, x):
     prev_f = prev[0]
