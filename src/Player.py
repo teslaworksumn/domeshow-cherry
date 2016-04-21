@@ -75,10 +75,13 @@ def _timed_frame(frame_and_time):
     frame, time = frame_and_time
     return rx.Observable.just(frame).delay(time)
 
-def _passthrough(acc, x):
-    for i in range(len(x[0])):
-        if x[0][i] == -1:
-            x[0][i] = acc[0][i]
+def _passthrough(prev, x):
+    prev_f = prev[0]
+    x_f = x[0]
+
+    for i in range(120):
+        if x_f[i] == -1:
+            x_f[i] = prev_f[i]
     return x
 
 def _make_solid_stream():
