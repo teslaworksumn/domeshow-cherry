@@ -15,6 +15,5 @@ def get_observable(color=None, offset=0, tick_period_ms=0):
         [unordered_frames[i] for i in range(0, 9, 2)] + \
         [unordered_frames[i] for i in range(9, 0, -2)]
 
-    return Observable.interval(tick_period_ms) \
-        .take(len(frames)) \
-        .map(lambda i: frames[i])
+    return Observable.from_list(frames) \
+        .map(lambda frame: (frame, tick_period_ms))

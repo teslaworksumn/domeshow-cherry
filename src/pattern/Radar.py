@@ -24,10 +24,7 @@ def get_observable(
         frames = [PB.build3(layers) for layers in layer_sets]
 
     if reverse:
-        access = lambda i: frames[-1 - i]
-    else:
-        access = lambda i: frames[i]
+        frames = frames[::-1]
 
-    return Observable.interval(tick_period_ms) \
-        .take(len(frames)) \
-        .map(access)
+    return Observable.from_list(frames) \
+        .map(lambda frame: (frame, tick_period_ms))

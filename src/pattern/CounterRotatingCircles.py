@@ -24,6 +24,5 @@ def get_observable(colorsA=None, colorsB=None, tall=None, tick_period_ms=0):
             colors = [shifted[i % 2] for i in range(3)]
             frames[i] = PB.build3(colors)
 
-    return Observable.interval(tick_period_ms) \
-        .take(len(frames)) \
-        .map(lambda i: frames[i])
+    return Observable.from_list(frames) \
+        .map(lambda frame: (frame, tick_period_ms))

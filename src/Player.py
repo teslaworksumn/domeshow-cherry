@@ -69,21 +69,21 @@ def make_player(output, pattern_makers):
             on_completed = lambda: output.close('Completed'))
     
     return Player(state_stream)
+        #.do_action(_nop, print, _nop) \
 
 def _timed_frame(frame_and_time):
     frame, time = frame_and_time
     return rx.Observable.just(frame).delay(time)
 
-def _passthrough(acc, frame_and_time):
-    x = frame_and_time[0]
-    for i in range(len(x)):
-        if x[i] == -1:
-            x[i] = acc[i]
-    return frame_and_time
+def _passthrough(acc, x):
+    for i in range(len(x[0])):
+        if x[0][i] == -1:
+            x[0][i] = acc[0][i]
+    return x
 
 def _make_solid_stream():
     def stream(state):
-        return rx.Observable.just(state[1:4] * 40)
+        return rx.Observable.just((state[1:4] * 40, 0))
 
     return stream
 
