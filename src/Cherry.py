@@ -11,9 +11,10 @@ import src.pattern.Tsunami as tsunami
 import src.pattern.Sarlacc as sarlacc
 import src.pattern.Radar as radar
 import src.pattern.CounterRotatingCircles as crc
-import src.pattern.BeachBall as beach_ball
+import src.pattern.VerticalWave as vertical_wave
 import src.pattern.Pulse as pulse
 import src.pattern.Spiral as spiral
+import src.pattern.BeachBall as beach_ball
 from src.UserInput import UserInput
 
 user_input = UserInput()
@@ -24,7 +25,7 @@ pattern_makers = [
     lambda: (sarlacc.get_observable(), 'Sarlacc'),
     lambda: (radar.get_observable(), 'Radar'),
     lambda: (crc.get_observable(), 'Counter Rotating Circles'),
-    lambda: (beach_ball.get_observable(), 'Beach Ball'),
+    lambda: (vertical_wave.get_observable(), 'Vertical Wave'),
     lambda: (pulse.get_observable(), 'Pulse'),
     lambda: (spiral.get_observable(), 'Spiral')
 ]
