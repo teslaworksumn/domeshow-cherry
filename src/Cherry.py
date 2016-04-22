@@ -13,6 +13,7 @@ import src.pattern.Radar as radar
 import src.pattern.CounterRotatingCircles as crc
 import src.pattern.BeachBall as beach_ball
 import src.pattern.Pulse as pulse
+import src.pattern.Spiral as spiral
 from src.UserInput import UserInput
 
 user_input = UserInput()
@@ -24,7 +25,8 @@ pattern_makers = [
     lambda: (radar.get_observable(), 'Radar'),
     lambda: (crc.get_observable(), 'Counter Rotating Circles'),
     lambda: (beach_ball.get_observable(), 'Beach Ball'),
-    lambda: (pulse.get_observable(), 'Pulse')
+    lambda: (pulse.get_observable(), 'Pulse'),
+    lambda: (spiral.get_observable(), 'Spiral')
 ]
 
 cp = Player.make_player(ConsoleOutput(), pattern_makers)

@@ -20,6 +20,9 @@ class Player:
     def shutdown(self):
         self._state_stream.on_completed()
 
+    def off(self):
+        self.run_solid(0, 0, 0)
+
     def run_solid(self, r, g, b):
         self._state_stream.on_next(['solid', r, g, b])
 
