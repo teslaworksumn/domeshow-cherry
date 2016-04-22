@@ -9,6 +9,7 @@ import src.pattern.Tsunami as tsunami
 import src.pattern.Sarlacc as sarlacc
 import src.pattern.Radar as radar
 import src.pattern.CounterRotatingCircles as crc
+import src.pattern.BeachBall as beach_ball
 from src.UserInput import UserInput
 
 user_input = UserInput()
@@ -18,7 +19,8 @@ pattern_makers = [
     lambda: (tsunami.get_observable(), 'Tsunami'),
     lambda: (sarlacc.get_observable(), 'Sarlacc'),
     lambda: (radar.get_observable(), 'Radar'),
-    lambda: (crc.get_observable(), 'Counter Rotating Circles')
+    lambda: (crc.get_observable(), 'Counter Rotating Circles'),
+    lambda: (beach_ball.get_observable(), 'Beach Ball')
 ]
 
 fp = Player.make_player(user_input.output, pattern_makers)
