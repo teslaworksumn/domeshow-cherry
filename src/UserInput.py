@@ -1,6 +1,6 @@
 import argparse
-import os
-import src.Output as output
+from src.output.FileOutput import FileOutput as FileOutput
+
 
 class UserInput:
     def __init__(self):
@@ -14,8 +14,7 @@ class UserInput:
         parser.add_argument(
             '-o',
             '--output',
-            default='/tmp/cherrylog',
-            type=output.FileOutput)
+            default='/tmp/cherrylog')
         return parser.parse_args()
 
 
