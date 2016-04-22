@@ -27,7 +27,8 @@ pattern_makers = [
     lambda: (crc.get_observable(), 'Counter Rotating Circles'),
     lambda: (vertical_wave.get_observable(), 'Vertical Wave'),
     lambda: (pulse.get_observable(), 'Pulse'),
-    lambda: (spiral.get_observable(), 'Spiral')
+    lambda: (spiral.get_observable(), 'Spiral'),
+    lambda: (beach_ball.get_observable(), 'Beach Ball')
 ]
 
 cp = Player.make_player(ConsoleOutput(), pattern_makers)
