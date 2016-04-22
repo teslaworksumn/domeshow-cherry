@@ -1,6 +1,7 @@
 from libs.bitstring import Bits as Bits
 from libs.crc16 import crc16pure as crc16
 import serial
+import time
 from src.output.CtsThread import CtsThread as CtsThread
 
 
@@ -9,17 +10,17 @@ class SerialOutput:
         self._port = port
         self._output = serial.Serial(port=port, baudrate=baud)
         self._output.write(b'B')  # Because Xbee
-        self._cts = CtsThread(self._output)  # Because Xbee is stupid with CTS
+        #self._cts = CtsThread(self._output)  # Because Xbee is stupid with CTS
 
     def close(self, message):
         print('Closing SerialOutput {0}: {1}'.format(self._port, message))
         self._output.close()
 
     def send(self, data):
-        if self._cts.cts_state:
-            packet = _create_packet(_patch(data))
+        packet = _create_packet(_patch(data))
+        for i in range(3):
             self._output.write(packet)
-            self._cts.set_cts(False)
+            time.sleep(0.03)
 
 def _create_packet(data):
     magic = bytearray([0xde, 0xad, 0xbe, 0xef])
@@ -27,7 +28,6 @@ def _create_packet(data):
     payload = Bits().join([Bits(uint=x, length=8) for x in data])
     patched_str = payload.tobytes()
     crc = Bits(uint=crc16.crc16xmodem(patched_str), length=16)
-    print(crc)
     packet = Bits().join([magic, length, payload, crc])
     return packet.tobytes()
 
