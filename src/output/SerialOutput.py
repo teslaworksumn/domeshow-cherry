@@ -1,8 +1,12 @@
-from libs.bitstring import Bits as Bits
-from libs.crc16 import crc16pure as crc16
+import sys
+import os
+sys.path.append('libs')
+
+from bitstring import Bits as Bits
+from crc16 import crc16pure as crc16
 import serial
 import time
-from src.output.CtsThread import CtsThread as CtsThread
+from output.CtsThread import CtsThread as CtsThread
 
 
 class SerialOutput:

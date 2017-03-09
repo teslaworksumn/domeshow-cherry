@@ -1,20 +1,19 @@
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.realpath(__file__))))
 
-import src.Player as Player
-from src.output.FileOutput import FileOutput as FileOutput
-from src.output.ConsoleOutput import ConsoleOutput as ConsoleOutput
-from src.output.SerialOutput import SerialOutput as SerialOutput
-import src.pattern.FullRandom as full_random
-import src.pattern.Tsunami as tsunami
-import src.pattern.Sarlacc as sarlacc
-import src.pattern.Radar as radar
-import src.pattern.CounterRotatingCircles as crc
-import src.pattern.BeachBall as beach_ball
-import src.pattern.Pulse as pulse
-import src.pattern.Spiral as spiral
-from src.UserInput import UserInput
+import Player as Player
+from output.FileOutput import FileOutput as FileOutput
+from output.ConsoleOutput import ConsoleOutput as ConsoleOutput
+from output.SerialOutput import SerialOutput as SerialOutput
+import pattern.FullRandom as full_random
+import pattern.Tsunami as tsunami
+import pattern.Sarlacc as sarlacc
+import pattern.Radar as radar
+import pattern.CounterRotatingCircles as crc
+import pattern.BeachBall as beach_ball
+import pattern.Pulse as pulse
+import pattern.Spiral as spiral
+from UserInput import UserInput
 
 user_input = UserInput()
 

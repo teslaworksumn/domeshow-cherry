@@ -1,5 +1,5 @@
 import argparse
-from src.output.FileOutput import FileOutput as FileOutput
+from output.FileOutput import FileOutput as FileOutput
 
 
 class UserInput:

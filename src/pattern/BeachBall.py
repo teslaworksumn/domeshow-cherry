@@ -1,4 +1,4 @@
-import src.pattern.PatternBuilder as PB
+import pattern.PatternBuilder as PB
 import random
 from rx import Observable
 

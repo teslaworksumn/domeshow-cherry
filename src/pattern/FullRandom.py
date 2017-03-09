@@ -1,6 +1,6 @@
 import random
 import rx
-import src.pattern.PatternBuilder as PB
+import pattern.PatternBuilder as PB
 
 def get_observable(tick_period_ms=0, num_frames=-1):
     if tick_period_ms <= 0: tick_period_ms = 500
