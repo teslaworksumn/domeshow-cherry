@@ -44,3 +44,5 @@ Horizontal index on top, Layers on side
 | 3 | x |   | x |   | x |   | x |   | x |   |
 | 4 | x |   | x |   | x |   | x |   | x |   |
 
+# License
+This program uses pieces of https://github.com/teslaworksumn/enttec-usb-dmx-pro, which is under the MIT license. This license can be found in licenses/enttec_usb_dmx_pro

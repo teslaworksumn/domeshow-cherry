@@ -5,6 +5,7 @@ import Player as Player
 from output.FileOutput import FileOutput as FileOutput
 from output.ConsoleOutput import ConsoleOutput as ConsoleOutput
 from output.SerialOutput import SerialOutput as SerialOutput
+from output.DmxOutput import DmxOutput as DmxOutput
 import pattern.FullRandom as full_random
 import pattern.Tsunami as tsunami
 import pattern.Sarlacc as sarlacc
@@ -39,3 +40,7 @@ try:
 except Exception:
     print('Failed to open SerialOutput with output "', user_input.output, '"', sep='')
 
+try:
+    dp = Player.make_player(DmxOutput(user_input.output), pattern_makers)
+except Exception:
+    print('Failed to open DmxOutput with output "', user_input.output, '"', sep='')
