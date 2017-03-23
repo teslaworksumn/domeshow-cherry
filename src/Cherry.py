@@ -1,7 +1,6 @@
 import sys
 import os
 
-import Player as Player
 from output.FileOutput import FileOutput as FileOutput
 from output.ConsoleOutput import ConsoleOutput as ConsoleOutput
 from output.SerialOutput import SerialOutput as SerialOutput
@@ -14,29 +13,37 @@ import pattern.CounterRotatingCircles as crc
 import pattern.BeachBall as beach_ball
 import pattern.Pulse as pulse
 import pattern.Spiral as spiral
+from Player import Player
 from UserInput import UserInput
 
 user_input = UserInput()
 
+# This is all pattern makers used when running a live stream
+# of patterns. They are kept as promises to reduce unnecessary
+# allocations, as well as to guarantee different versions of
+# each pattern on every call.
+# The format for each pattern maker is (pattern_observable, 'pattern name')
 pattern_makers = [
-    lambda: (full_random.get_observable(), 'Full Random'),
-    lambda: (tsunami.get_observable(), 'Tsunami'),
-    lambda: (sarlacc.get_observable(), 'Sarlacc'),
-    lambda: (radar.get_observable(), 'Radar'),
-    lambda: (crc.get_observable(), 'Counter Rotating Circles'),
-    lambda: (beach_ball.get_observable(), 'Beach Ball'),
-    lambda: (pulse.get_observable(), 'Pulse'),
-    lambda: (spiral.get_observable(), 'Spiral')
+    lambda: (full_random.get_observable(tick_period_ms=user_input.speed), 'Full Random'),
+    lambda: (tsunami.get_observable(tick_period_ms=user_input.speed), 'Tsunami'),
+    lambda: (sarlacc.get_observable(tick_period_ms=user_input.speed), 'Sarlacc'),
+    lambda: (radar.get_observable(tick_period_ms=user_input.speed), 'Radar'),
+    lambda: (crc.get_observable(tick_period_ms=user_input.speed), 'Counter Rotating Circles'),
+    lambda: (beach_ball.get_observable(tick_period_ms=user_input.speed), 'Beach Ball'),
+    lambda: (pulse.get_observable(tick_period_ms=user_input.speed), 'Pulse'),
+    lambda: (spiral.get_observable(tick_period_ms=user_input.speed), 'Spiral')
 ]
 
-cp = Player.make_player(ConsoleOutput(), pattern_makers)
+# Try to create all types of players. Some will fail, which is fine.
+# This is quick and dirty way to check that the given output string is valid
+cp = Player(ConsoleOutput(), pattern_makers)
 try:
-    fp = Player.make_player(FileOutput(user_input.output), pattern_makers)
-except Exception:
+    fp = Player(FileOutput(user_input.output), pattern_makers)
+except IOError:
     print('Failed to open FileOutput with output "', user_input.output, '"', sep='')
 
 try:
-    sp = Player.make_player(SerialOutput(user_input.output), pattern_makers)
+    sp = Player(SerialOutput(user_input.output), pattern_makers)
 except Exception:
     print('Failed to open SerialOutput with output "', user_input.output, '"', sep='')
 

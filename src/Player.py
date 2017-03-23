@@ -1,123 +1,91 @@
 import rx
 import random
 
-def _nop(unused = None):
-    pass
-
 # This class holds all of the dome's patterns and runs them
 class Player:
     """
-    Wraps around a stream of PlayerState, where PlayerState is a tagged union
-    PlayerState = Live
-                | Solid(i8 r, i8 g, i8 b)
-                | Pattern(index i)
-    Implemented as lists, with variant tag as first index.
+    Handles the running of dome patterns. These can be either solid
+    colors (run_solid), patterns (run_pattern), or a continuous
+    stream of patterns (run_live).
     """
 
-    def __init__(self, state_stream):
-        self._state_stream = state_stream
+    def __init__(self, output, pattern_makers):
+        self._output = output
+        self._pattern_makers = pattern_makers
 
-    def shutdown(self):
-        self._state_stream.on_completed()
-
+    # Convenience function to turn all lights off
+    # Identical to run_solid(0, 0, 0)
     def off(self):
         self.run_solid(0, 0, 0)
 
+    # Convenience function to turn all lights on
+    # Identical to run_solid(255, 255, 255)
+    def on(self):
+        self.run_solid(255, 255, 255)
+
+    # Makes the entire dome one color
     def run_solid(self, r, g, b):
-        self._state_stream.on_next(['solid', r, g, b])
+        frame = [r, g, b] * 40
+        self._output.send(frame)
 
+    # Continuously run randomly selected patterns
     def run_live(self):
-        self._state_stream.on_next(['live'])
+        # Choose a random pattern
+        pattern_idx = random.randrange(0, len(self._pattern_makers))
+        (pattern_stream, info) = self._pattern_makers[pattern_idx]()
+        
+        # Once a pattern finishes, inform the user and run again
+        def _pattern_done():
+            print('Pattern {} completed'.format(info))
+            self.run_live()
 
+        # Run the pattern
+        pattern_stream \
+            .scan(_passthrough, [0] * 120) \
+            .do_action(_bound_data, _nop, _nop) \
+            .subscribe(
+                on_next = self._output.send,
+                on_error = lambda e: self._output.close(str(e)),
+                on_completed = _pattern_done)
+
+    # Get a pattern by index and run it
     def run_pattern(self, i):
-        self._state_stream.on_next(['pattern', i])
+        # Check that the index is valid
+        if i < 0 or i >= len(self._pattern_makers):
+            raise ValueError("Invalid pattern - out of range")
+        
+        # Get the pattern
+        (pattern_stream, info) = self._pattern_makers[i]()
 
-def make_player(output, pattern_makers):
-    """
-    Factory for initializing observable graph and subscribing output to a
-    player. The output will be closed when the player is shutdown.
+        # Run the pattern
+        pattern_stream \
+            .scan(_passthrough, [0] * 120) \
+            .do_action(_bound_data, _nop, _nop) \
+            .subscribe(
+                on_next = self._output.send,
+                on_error = lambda e: self._output.close(str(e)),
+                on_completed = lambda: print('Pattern {} completed'.format(info)))
 
-    Args:
-        output: Output to write to.
-        pattern_makers: List of functions taking no args and returning a
-            (Observable<[u8]>, info object).
-    """
 
-    if len(pattern_makers) == 0:
-        raise ValueError('pattern_makers is empty')
+# Function that does nothing (used for Rx observables)
+def _nop(unused = None):
+    pass
 
-    # Switch on state variants
-    handle_state = {
-        'solid': _make_solid_stream(),
-        'live': _make_live_stream(pattern_makers),
-        'pattern': _make_pattern_stream(pattern_makers)
-    }
+# Takes a list of frame data and maps all '-1's to the last
+# frame's data (passes through, acts transparent) 
+def _passthrough(accumulated, x):
+    for i in range(len(x)):
+        if x[i] == -1:
+            x[i] = accumulated[i]
+    return x
 
-    def _passthrough(acc, x):
-        for i in range(len(x)):
-            if x[i] == -1:
-                x[i] = acc[i]
-        return x
-
-    state_stream = rx.subjects.Subject()
-
-    # Make data stream and subscribe output to it.
-    state_stream \
-        .map(lambda state: handle_state[state[0]](state)) \
-        .switch_latest() \
-        .scan(_passthrough, [0] * 120) \
-        .do_action(_bound_data, _nop, _nop) \
-        .subscribe(
-            on_next = output.send,
-            on_error = lambda e: output.close(str(e)),
-            on_completed = lambda: output.close('Completed'))
-    
-    return Player(state_stream)
-
-def _make_solid_stream():
-    def stream(state):
-        return rx.Observable.just(state[1:4] * 40)
-
-    return stream
-
-def _make_pattern_stream(pattern_makers):
-    def stream(state):
-        try:
-            return pattern_makers[state[1]]()[0]
-        except Exception as e:
-            print("Pattern maker {} error: {}".format(state[1], e))
-            return rx.Observable.empty()
-
-    return stream
-
-def _make_live_stream(pattern_makers):
-    log_err = lambda e: print("Pattern maker error: " + str(e))
-
-    def stream(state):
-        return rx.Observable.repeat(None) \
-            .map(lambda none: random.choice(pattern_makers)) \
-            .map(lambda pmaker: pmaker()) \
-            .do_action(_nop, log_err, _nop) \
-            .retry() \
-            .map(_error_handle_sub_stream) \
-            .concat_all()
-
-    return stream
-
-# Ensure that a erroring sub stream completes gracefully        
-def _error_handle_sub_stream(args):       
-    (sub_stream, info) = args     
-
-    log_err = lambda e: print("Sub stream error: {}, {}".format(info, e))
-     
-    return sub_stream \
-        .do_action(_nop, log_err, _nop) \
-        .catch_exception(rx.Observable.empty())
-
+# Makes sure all elements of data have their range bound by _bound_datum
 def _bound_data(data):
     for i in range(len(data)):
         data[i] = _bound_datum(data[i])
 
+# Maps value to range [0, 255]. If smaller, set to minimum. If bigger,
+# set to maximum
 def _bound_datum(x):
     if x < 0:
         return 0

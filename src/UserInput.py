@@ -6,7 +6,7 @@ class UserInput:
     def __init__(self):
         args = self._parse()
         self.output = args.output
-        #self.output = output.ConsoleOutput()
+        self.speed = args.speed
 
     # Parse command line arguments
     def _parse(self):
@@ -15,6 +15,9 @@ class UserInput:
             '-o',
             '--output',
             default='/tmp/cherrylog')
+        parser.add_argument(
+            '--speed',
+            default=1000)
         return parser.parse_args()
 
 
