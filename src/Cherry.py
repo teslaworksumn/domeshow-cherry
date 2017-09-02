@@ -1,3 +1,4 @@
+import serial
 import sys
 import os
 
@@ -5,6 +6,7 @@ from output.FileOutput import FileOutput as FileOutput
 from output.ConsoleOutput import ConsoleOutput as ConsoleOutput
 from output.SerialOutput import SerialOutput as SerialOutput
 from output.DmxOutput import DmxOutput as DmxOutput
+from output import DMXException, UsbDmxProException
 import pattern.FullRandom as full_random
 import pattern.Tsunami as tsunami
 import pattern.Sarlacc as sarlacc
@@ -43,11 +45,11 @@ except IOError:
     print('Failed to open FileOutput with output "', user_input.output, '"', sep='')
 
 try:
-    sp = Player(SerialOutput(user_input.output), pattern_makers)
-except Exception:
+    sp = Player(SerialOutput(user_input.output, baud=57600), pattern_makers)
+except serial.SerialException:
     print('Failed to open SerialOutput with output "', user_input.output, '"', sep='')
 
 try:
-    dp = Player.make_player(DmxOutput(user_input.output), pattern_makers)
-except Exception:
+    dp = Player(DmxOutput(user_input.output), pattern_makers)
+except (DMXException, UsbDmxProException, serial.SerialException):
     print('Failed to open DmxOutput with output "', user_input.output, '"', sep='')
