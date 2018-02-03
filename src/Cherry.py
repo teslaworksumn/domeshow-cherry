@@ -45,11 +45,12 @@ except IOError:
     print('Failed to open FileOutput with output "', user_input.output, '"', sep='')
 
 try:
-    sp = Player(SerialOutput(user_input.output, baud=57600), pattern_makers)
-except serial.SerialException:
+    sp = Player(SerialOutput(user_input.output, baud=38400), pattern_makers)
+except serial.SerialException as e:
     print('Failed to open SerialOutput with output "', user_input.output, '"', sep='')
+    print(e)
 
-try:
-    dp = Player(DmxOutput(user_input.output), pattern_makers)
-except (DMXException, UsbDmxProException, serial.SerialException):
-    print('Failed to open DmxOutput with output "', user_input.output, '"', sep='')
+    try:
+        dp = Player(DmxOutput(user_input.output), pattern_makers)
+    except (DMXException, UsbDmxProException, serial.SerialException):
+        print('Failed to open DmxOutput with output "', user_input.output, '"', sep='')

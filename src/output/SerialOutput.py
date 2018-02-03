@@ -14,6 +14,7 @@ class SerialOutput:
         self._port = port
         self._output = serial.Serial(port=port, baudrate=baud)
         self._output.write(b'B')  # Because Xbee
+        print("Open of serial output successful at", baud, "baud")
         #self._cts = CtsThread(self._output)  # Because Xbee is stupid with CTS
 
     def close(self, message):
@@ -22,21 +23,29 @@ class SerialOutput:
 
     def send(self, data):
         packet = _create_packet(_patch(data))
-        for i in range(3):
-            self._output.write(packet)
-            time.sleep(0.1)
+        self._output.write(packet)
+
+def _cap_data(data):
+    capped = []
+    for x in data:
+        if x >= 255:
+            capped += [254]
+        else:
+            capped += [x]
+    return capped
 
 def _create_packet(data):
-    magic = bytearray([0xde, 0xad, 0xbe, 0xef])
-    length = Bits(uint=144, length=16).tobytes()
-    payload = Bits().join([Bits(uint=x, length=8) for x in data])
+    magic = bytearray([0xde, 0xad, 0xff, 0xff])
+    length = Bits(uint=120, length=16).tobytes()
+    capped_data = _cap_data(data)
+    payload = Bits().join([Bits(uint=x, length=8) for x in capped_data])
     patched_str = payload.tobytes()
     crc = Bits(uint=crc16.crc16xmodem(patched_str), length=16)
     packet = Bits().join([magic, length, payload, crc])
     return packet.tobytes()
 
 def _patch(data):
-    patched = [0] * 144
+    patched = [0] * 120
     patched[0] = data[0]
     patched[1] = data[1]
     patched[2] = data[2]
@@ -147,15 +156,15 @@ def _patch(data):
     patched[117] = data[98]
     patched[118] = data[99]
     patched[119] = data[100]
-    patched[120] = data[101]
-    patched[121] = data[21]
-    patched[122] = data[22]
-    patched[123] = data[23]
-    patched[128] = data[27]
-    patched[129] = data[28]
-    patched[130] = data[29]
-    patched[131] = data[102]
-    patched[132] = data[103]
-    patched[133] = data[104]
+    # patched[120] = data[101]
+    # patched[121] = data[21]
+    # patched[122] = data[22]
+    # patched[123] = data[23]
+    # patched[128] = data[27]
+    # patched[129] = data[28]
+    # patched[130] = data[29]
+    # patched[131] = data[102]
+    # patched[132] = data[103]
+    # patched[133] = data[104]
 
     return patched

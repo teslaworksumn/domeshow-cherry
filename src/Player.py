@@ -1,5 +1,6 @@
 import rx
 import random
+import time
 
 from PatternQueue import PatternQueue
 
@@ -13,6 +14,7 @@ class Player:
 
     def __init__(self, output, pattern_makers):
         self._output = output
+        self._pattern_makers = pattern_makers
         self._pattern_queue = PatternQueue(5, pattern_makers)
 
     # Convenience function to turn all lights off
@@ -28,7 +30,18 @@ class Player:
     # Makes the entire dome one color
     def run_solid(self, r, g, b):
         frame = [r, g, b] * 40
-        self._output.send(frame)
+        # Try 3 times to make sure it gets through
+        for i in range(1):
+            self._output.send(frame)
+            time.sleep(0.05)
+
+    # Makes all channels slowly fade up. Useful for testing
+    def run_fade(self, speed=1):
+        i = 0
+        while True:
+            value = (i % 255)
+            self.run_solid(value, value, value)
+            i = i + speed
 
     # Continuously run randomly selected patterns
     def run_live(self):
@@ -61,7 +74,13 @@ class Player:
             raise ValueError("Invalid pattern - out of range")
         
         # Get the pattern
-        (pattern_stream, info) = self._pattern_makers[i]()
+        (pattern, info) = self._pattern_makers[i]()
+        (pattern_frames, tick_period_ms) = pattern
+
+        # Create pattern stream
+        pattern_stream = rx.Observable.interval(tick_period_ms) \
+            .take(len(pattern_frames)) \
+            .map(lambda i: pattern_frames[i])
 
         # Run the pattern
         pattern_stream \
