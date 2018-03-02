@@ -30,18 +30,20 @@ def _cap_data(data):
     for x in data:
         if x >= 255:
             capped += [254]
+        elif x == 0:
+            capped += [1]
         else:
             capped += [x]
     return capped
 
 def _create_packet(data):
-    magic = bytearray([0xde, 0xad, 0xff, 0xff])
-    length = Bits(uint=120, length=16).tobytes()
+    magic = bytearray([0xff, 0x00, 0xff, 0x00, 0x00, 0xff])
     capped_data = _cap_data(data)
+    capped_data += [0] * (120 - len(capped_data))
     payload = Bits().join([Bits(uint=x, length=8) for x in capped_data])
     patched_str = payload.tobytes()
     crc = Bits(uint=crc16.crc16xmodem(patched_str), length=16)
-    packet = Bits().join([magic, length, payload, crc])
+    packet = Bits().join([magic, payload, crc])
     return packet.tobytes()
 
 def _patch(data):

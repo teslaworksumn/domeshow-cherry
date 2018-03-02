@@ -27,6 +27,11 @@ class Player:
     def on(self):
         self.run_solid(255, 255, 255)
 
+    def test(self):
+        while(True):
+            self.on()
+            time.sleep(0.05)
+
     # Makes the entire dome one color
     def run_solid(self, r, g, b):
         frame = [r, g, b] * 40
